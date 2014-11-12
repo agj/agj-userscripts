@@ -1,6 +1,7 @@
 // ==UserScript==
 // @name        IMDB Re-prioritize
 // @namespace   http://www.agj.cl/
+// @description Puts the movie 'Details' block right below the main information block.
 // @include     /^http:\/\/(www.)?imdb.com\/title\/.+$/
 // @version     0.0.1
 // @grant       none
