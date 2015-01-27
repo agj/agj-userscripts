@@ -9,6 +9,7 @@
 // @grant       none
 // ==/UserScript==
 
+'use strict';
 
 // Config.
 
@@ -74,7 +75,7 @@ function pipe(fnA, fnB) {
 }
 function equals(a) {
 	return function (b) { return a === b; };
-};
+}
 
 
 // Run.
@@ -82,7 +83,6 @@ function equals(a) {
 onLoad( function () {
 
 	var matchesHost = pipe(get('host'), equals(location.hostname));
-	var selRemove = pipe(sel, remove);
 
 	var found =
 		sites
