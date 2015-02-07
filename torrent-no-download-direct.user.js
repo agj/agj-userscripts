@@ -6,7 +6,7 @@
 // @include     http://torrentproject.se/*
 // @include     http://torrentproject.org/*
 // @include     http://thepiratebay.se/torrent/*/*
-// @version     0.0.1
+// @version     0.1.0
 // @grant       none
 // ==/UserScript==
 
