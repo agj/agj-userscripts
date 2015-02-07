@@ -4,6 +4,7 @@
 // @description Hide misleading 'download direct' links in several torrent sites.
 // @include     http://bitsnoop.com/*
 // @include     http://torrentproject.se/*
+// @include     http://torrentproject.org/*
 // @include     http://thepiratebay.se/torrent/*/*
 // @version     0.0.1
 // @grant       none
@@ -15,7 +16,7 @@
 
 var sites = [
 		{
-			host: 'bitsnoop.com',
+			hosts: ['bitsnoop.com'],
 			elements: [
 				'#dload > :nth-child(1)',
 				'#dload > :nth-child(2)',
@@ -25,14 +26,14 @@ var sites = [
 			],
 		},
 		{
-			host: 'torrentproject.se',
+			hosts: ['torrentproject.se', 'torrentproject.org'],
 			elements: [
 				'#offer_u',
 				'#download .usite:nth-child(1)',
 			],
 		},
 		{
-			host: 'thepiratebay.se',
+			hosts: ['thepiratebay.se'],
 			elements: [
 				'[title="Anonymous Download "]',
 			],
@@ -76,13 +77,18 @@ function pipe(fnA, fnB) {
 function equals(a) {
 	return function (b) { return a === b; };
 }
+function any(predicate) {
+	return function (list) {
+		return list.filter(predicate).length > 0;
+	};
+}
 
 
 // Run.
 
 onLoad( function () {
 
-	var matchesHost = pipe(get('host'), equals(location.hostname));
+	var matchesHost = pipe(get('hosts'), any(equals(location.hostname)));
 
 	var found =
 		sites
