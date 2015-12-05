@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name        Wikipedia hide unused languages
 // @namespace   http://www.agj.cl/
+// @description Allows selection of languages to display, in sidebar.
 // @include     http*://*.wikipedia.org/wiki/*
-// @version     0.1.0
+// @version     0.1.1
 // @grant       none
 // ==/UserScript==
 
@@ -90,6 +91,21 @@
 		#p-lang .interlanguage-link .unused-languages-add-remove .add,
 		#p-lang .interlanguage-link .unused-languages-add-remove .remove {
 			cursor: pointer;
+		}
+
+		#p-lang .interlanguage-link .unused-languages-add-remove .add,
+		#p-lang .interlanguage-link .unused-languages-add-remove .remove {
+			color: white;
+			background-color: #bababa;
+			font-size: 0.7em;
+			line-height: 1.3;
+			text-decoration: none;
+			text-align: center;
+			border-radius: 3px;
+			width: 11px;
+			height: 11px;
+			display: inline-block;
+			vertical-align: middle;
 		}
 
 		#p-lang .interlanguage-link.selected       .unused-languages-add-remove .add {
