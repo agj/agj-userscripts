@@ -2,10 +2,10 @@
 // @name        No torrent download direct
 // @namespace   http://www.agj.cl/
 // @description Hide misleading 'download direct' links in several torrent sites.
-// @include     http://bitsnoop.com/*
-// @include     http://torrentproject.se/*
-// @include     http://torrentproject.org/*
-// @include     http://thepiratebay.se/torrent/*/*
+// @include     http*://bitsnoop.com/*
+// @include     http*://torrentproject.se/*
+// @include     http*://torrentproject.org/*
+// @include     http*://thepiratebay.se/torrent/*/*
 // @version     0.1.0
 // @grant       none
 // ==/UserScript==
