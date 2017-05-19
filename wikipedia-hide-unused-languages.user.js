@@ -3,7 +3,7 @@
 // @namespace   http://www.agj.cl/
 // @description Allows selection of languages to display, in sidebar.
 // @include     http*://*.wikipedia.org/wiki/*
-// @version     0.1.1
+// @version     0.2.0
 // @grant       none
 // ==/UserScript==
 
@@ -96,7 +96,6 @@
 		#p-lang .interlanguage-link .unused-languages-add-remove .add,
 		#p-lang .interlanguage-link .unused-languages-add-remove .remove {
 			color: white;
-			background-color: #bababa;
 			font-size: 0.7em;
 			line-height: 1.3;
 			text-decoration: none;
@@ -106,6 +105,12 @@
 			height: 11px;
 			display: inline-block;
 			vertical-align: middle;
+		}
+		#p-lang .interlanguage-link .unused-languages-add-remove .add {
+			background-color: #7adf81;
+		}
+		#p-lang .interlanguage-link .unused-languages-add-remove .remove {
+			background-color: #bababa;
 		}
 
 		#p-lang .interlanguage-link.selected       .unused-languages-add-remove .add {

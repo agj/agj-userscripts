@@ -3,7 +3,7 @@
 // @namespace   http://www.agj.cl/
 // @description Shows the article name in its language in the 'Languages' box.
 // @include     http*://*.wikipedia.org/wiki/*
-// @version     0.1.0
+// @version     0.2.0
 // @grant       none
 // ==/UserScript==
 
@@ -19,8 +19,7 @@
 	const selAll = document.querySelectorAll.bind(document);
 	const eq = a => b => a === b;
 	const test = regex => text => regex.test(text);
-	const call = (method, ...args) => obj => obj[method](...args);
-	const isIn = list => obj => list.some(eq(obj));
+	const testOn = text => regex => regex.test(text);
 	const prepend = a => b => a + b;
 	const makeEl = (tag, attrs, ...content) => {
 		const el = document.createElement(tag);
@@ -29,7 +28,6 @@
 			.forEach(node => el.appendChild(node));
 		return el;
 	};
-	const alternate = (f, g) => { let state = false; return () => { state = !state; return state ? f() : g() } };
 	const pipe = (...fs) => fs.reduce((left, right) => (...args) => right(left(...args)));
 	const uniq = list => {
 		const seen = [];
@@ -43,18 +41,22 @@
 	const elements = Array.from(selAll('.interlanguage-link'));
 
 	elements.forEach(el => {
-		console.log(el);
 		const a = el.getElementsByTagName('a')[0];
 		const langName = a.textContent;
-		const articleName = a.getAttribute('title').replace(/(.+) – .+/, '$1');
+		const titleAndLanguage = a.getAttribute('title');
+		const titleMatcher = [
+				/(.+) – .+/,    // English, etc.
+				/(.+) +\(.+\)/, // Spanish, etc.
+				/.+: (.+)/,     // Japanese, etc.
+			]
+			.find(testOn(titleAndLanguage));
+		const title = titleAndLanguage.replace(titleMatcher, '$1');
 		a.textContent = '';
 		a.appendChild(makeEl('span', { 'class': 'language-name' },
 			langName));
 		a.appendChild(document.createTextNode(' '));
 		a.appendChild(makeEl('span', { 'class': 'article-title' },
-			articleName));
-		// a.textContent = langName + ': ' + articleName;
-		// console.log(articleName, langName)
+			title));
 	});
 
 
@@ -63,12 +65,9 @@
 	sel('head').appendChild(makeEl('style', null,
 		`
 		.interlanguage-link .language-name {
+			display: block;
 			text-transform: uppercase;
 			font-size: 0.7em;
-		}
-		.interlanguage-link .article-title::before {
-			content: '\\A';
-			white-space: pre;
 		}
 		`
 	));

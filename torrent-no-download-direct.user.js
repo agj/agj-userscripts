@@ -2,11 +2,8 @@
 // @name        No torrent download direct
 // @namespace   http://www.agj.cl/
 // @description Hide misleading 'download direct' links in several torrent sites.
-// @include     http*://bitsnoop.com/*
-// @include     http*://torrentproject.se/*
-// @include     http*://torrentproject.org/*
 // @include     http*://thepiratebay.se/torrent/*/*
-// @version     0.1.0
+// @version     0.2.0
 // @grant       none
 // ==/UserScript==
 
@@ -15,23 +12,13 @@
 // Config.
 
 var sites = [
-		{
-			hosts: ['bitsnoop.com'],
-			elements: [
-				'#dload > :nth-child(1)',
-				'#dload > :nth-child(2)',
-				'#dload > :nth-child(3)',
-				'#dload > :nth-child(4)',
-				'#dload > :nth-child(5)',
-			],
-		},
-		{
-			hosts: ['torrentproject.se', 'torrentproject.org'],
-			elements: [
-				'#offer_u',
-				'#download .usite:nth-child(1)',
-			],
-		},
+		// {
+		// 	hosts: ['torrentproject.se', 'torrentproject.org'],
+		// 	elements: [
+		// 		'#offer_u',
+		// 		'#download .usite:nth-child(1)',
+		// 	],
+		// },
 		{
 			hosts: ['thepiratebay.se'],
 			elements: [
