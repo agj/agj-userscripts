@@ -3,7 +3,9 @@
 // @namespace   http://www.agj.cl/
 // @description Hide misleading 'download direct' links in several torrent sites.
 // @include     http*://thepiratebay.se/torrent/*/*
-// @version     0.2.0
+// @include     http*://torrentz2.eu/*
+// @include     http*://monova.org/*
+// @version     0.3.0
 // @grant       none
 // ==/UserScript==
 
@@ -25,6 +27,19 @@ var sites = [
 				'[title="Anonymous Download "]',
 			],
 		},
+		{
+			hosts: ['torrentz2.eu'],
+			elements: [
+				'.downlinks > dl:nth-of-type(1)',
+			],
+		},
+		{
+			hosts: ['monova.org'],
+			elements: [
+				'.page-buttons > a:not(#report_button):not(#favorite_button):not(#download-file)',
+				'.page-buttons > span',
+			],
+		},
 	];
 
 
@@ -39,7 +54,8 @@ var sel = document.querySelector.bind(document);
 var selAll = document.querySelectorAll.bind(document);
 
 function remove(el) {
-	if (el) el.parentElement.removeChild(el);
+	// if (el) el.parentElement.removeChild(el);
+	if (el) el.classList.add('spam');
 	return !!el;
 }
 
@@ -75,23 +91,25 @@ function any(predicate) {
 
 onLoad( function () {
 
+	console.log("Running.")
+
 	var matchesHost = pipe(get('hosts'), any(equals(location.hostname)));
 
-	var found =
+	var css =
 		sites
 		.filter(matchesHost)
 		.map(get('elements'))
 		.reduce(concat, [])
-		.map(selAll)
-		.map(toArray)
-		.reduce(concat, []);
-	found.map(remove);
+		.map(sel => `${ sel } { display: none }`)
+		.join('\n');
 
-	if (found.length > 0) {
-		console.log('Misleading link elements found and removed:', found);
-	} else {
-		console.log('No misleading link elements found.');
-	}
+	sel('body').insertAdjacentHTML('beforeend', `
+		<style>
+			${ css }
+		</style>
+	`);
+
+	console.log("Misleading links hidden.");
 
 });
 
