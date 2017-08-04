@@ -3,7 +3,7 @@
 // @namespace   http://www.agj.cl/
 // @description Puts the movie 'Details' block right below the main information block.
 // @include     /^http:\/\/(www.)?imdb.com\/title\/.+$/
-// @version     0.0.1
+// @version     0.1.0
 // @grant       none
 // ==/UserScript==
 
@@ -23,13 +23,10 @@ onLoad( function () {
 
 	if (window.top !== window.self) return; // Prevent loading on iframes.
 
-	var centerBottom = sel('#maindetails_center_bottom');
+	var centerBottom = sel('#main_bottom');
 	var details = sel('#titleDetails');
 
-	var after = sel('#titleMediaStrip');
-	if (!after) after = sel('#titleRecs');
-
-	centerBottom.insertBefore(details, after);
+	centerBottom.insertBefore(details, centerBottom.firstChild);
 
 });
 
