@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name        Wikipedia article name with language
 // @namespace   http://www.agj.cl/
-// @description Shows the article name in its language in the 'Languages' box.
+// @description In the 'Languages' list in the left sidebar, the language name linking to the same article in that language is complemented with the name of that article.
 // @include     http*://*.wikipedia.org/wiki/*
-// @version     0.2.0
+// @version     1.0.0
 // @grant       none
 // ==/UserScript==
 

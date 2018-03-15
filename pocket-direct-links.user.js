@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name        Pocket direct links
 // @namespace   http://www.agj.cl/
-// @description Main links are direct links, and clicking on the URL below opens the Pocket reader.
-// @version     0.0.1
+// @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
+// @version     1.0.0
 // @grant       none
 // @include     http*://getpocket.com/a/queue/list/*
 // ==/UserScript==

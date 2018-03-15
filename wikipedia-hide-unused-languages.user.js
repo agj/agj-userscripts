@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name        Wikipedia hide unused languages
 // @namespace   http://www.agj.cl/
-// @description Allows selection of languages to display, in sidebar.
+// @description Creates an interface to select what languages are displayed, in the left sidebar under 'Languages', where links to the same article in other language Wikipedias show up. You can show and hide every language by pressing the 'show/hide extra languages', and add and remove languages from your list by pressing the +/- button next to each language.
 // @include     http*://*.wikipedia.org/wiki/*
-// @version     0.2.0
+// @version     1.0.0
 // @grant       none
 // ==/UserScript==
 
@@ -49,7 +49,7 @@
 	const languageClasses = () => languages().map(prepend('interwiki-'));
 	const elements = Array.from(selAll('.interlanguage-link'));
 	const contenedorLenguajes = sel('#p-lang');
-	const toggleButton = makeEl('a', {}, 'show/hide more languages');
+	const toggleButton = makeEl('a', {}, 'extra languages');
 	const toggleButtonContainer = makeEl('div', { 'class': 'unused-languages-toggle-button-container' }, toggleButton);
 
 	const show = () => contenedorLenguajes.classList.add('unused-languages-showing');
@@ -91,6 +91,13 @@
 		#p-lang .interlanguage-link .unused-languages-add-remove .add,
 		#p-lang .interlanguage-link .unused-languages-add-remove .remove {
 			cursor: pointer;
+		}
+
+		#p-lang                          .unused-languages-toggle-button-container a::before {
+			content: 'show ';
+		}
+		#p-lang.unused-languages-showing .unused-languages-toggle-button-container a::before {
+			content: 'hide ';
 		}
 
 		#p-lang .interlanguage-link .unused-languages-add-remove .add,

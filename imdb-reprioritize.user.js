@@ -1,32 +1,31 @@
 // ==UserScript==
 // @name        IMDB Re-prioritize
 // @namespace   http://www.agj.cl/
-// @description Puts the movie 'Details' block right below the main information block.
-// @include     /^http:\/\/(www.)?imdb.com\/title\/.+$/
-// @version     0.1.0
+// @description Raises the 'Details' and 'Storyline' blocks to right below the main information block on any IMDB movie page.
+// @include     /^https?:\/\/(www.)?imdb.com\/title\/.+$/
+// @version     1.0.0
 // @grant       none
 // ==/UserScript==
 
 
 // Utils.
 
-function onLoad(cb) {
-	if (/interactive|complete/.test(document.readyState)) setTimeout(cb, 0);
-	else document.addEventListener('DOMContentLoaded', cb);
-}
-var sel = document.querySelector.bind(document);
+const onLoad = cb => /interactive|complete/.test(document.readyState) ? setTimeout(cb, 0) : document.addEventListener('DOMContentLoaded', cb);
+const sel = document.querySelector.bind(document);
 
 
 // Modify stuff.
 
-onLoad( function () {
+onLoad(() => {
 
 	if (window.top !== window.self) return; // Prevent loading on iframes.
 
-	var centerBottom = sel('#main_bottom');
-	var details = sel('#titleDetails');
+	const details = sel('#titleDetails');
+	const storyline = sel('#titleStoryLine');
+	const mainBottom = sel('#main_bottom')
 
-	centerBottom.insertBefore(details, centerBottom.firstChild);
+	mainBottom.prepend(storyline);
+	mainBottom.prepend(details);
 
 });
 
