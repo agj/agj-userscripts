@@ -1,10 +1,11 @@
 // ==UserScript==
-// @name        Wikipedia hide unused languages
-// @namespace   http://www.agj.cl/
-// @description Creates an interface to select what languages are displayed, in the left sidebar under 'Languages', where links to the same article in other language Wikipedias show up. You can show and hide every language by pressing the 'show/hide extra languages', and add and remove languages from your list by pressing the +/- button next to each language.
-// @include     http*://*.wikipedia.org/wiki/*
-// @version     1.0.0
-// @grant       none
+// @name         Wikipedia hide unused languages
+// @version      1.0.1
+// @namespace    http://www.agj.cl/
+// @description  Creates an interface to select what languages are displayed, in the left sidebar under 'Languages', where links to the same article in other language Wikipedias show up. You can show and hide every language by pressing the 'show/hide extra languages', and add and remove languages from your list by pressing the +/- button next to each language.
+// @license      Unlicense
+// @include      http*://*.wikipedia.org/wiki/*
+// @grant        none
 // ==/UserScript==
 
 (function () {

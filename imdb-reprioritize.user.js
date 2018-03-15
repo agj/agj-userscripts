@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name        IMDB Re-prioritize
+// @version     1.0.1
 // @namespace   http://www.agj.cl/
 // @description Raises the 'Details' and 'Storyline' blocks to right below the main information block on any IMDB movie page.
+// @license     Unlicense
 // @include     /^https?:\/\/(www.)?imdb.com\/title\/.+$/
-// @version     1.0.0
 // @grant       none
 // ==/UserScript==
 

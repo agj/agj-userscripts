@@ -1,10 +1,13 @@
 // ==UserScript==
-// @name        CDJournal to MusicBrainz
-// @namespace   http://www.agj.cl/
-// @description Adds a link "MusicBrainz に投稿" to any CDJournal.co.jp record entry page (right of the artist/record title) that opens the Add Release form in MusicBrainz, prefilling it with that record's information.
-// @include     http*://artist.cdjournal.com/d/*
-// @version     1.0.0
-// @grant       none
+// @name            CDJournal to MusicBrainz
+// @name:ja         CDJournal から MusicBrainz に
+// @version         1.0.1
+// @namespace       http://www.agj.cl/
+// @description     Adds a link "MusicBrainz に投稿" to any CDJournal.co.jp record entry page (right of the artist/record title) that opens the Add Release form in MusicBrainz, prefilling it with that record's information.
+// @description:ja  CDJournal.com のレコードページに「MusicBrainz に投稿」というリンクを追加します（作品名の右側に）。リンクをクリックすると、レコードの詳細で書き込み済み MusicBrainz の Add Release（リリースを投稿）ページが開きます。
+// @license         Unlicense
+// @include         http*://artist.cdjournal.com/d/*
+// @grant           none
 // ==/UserScript==
 
 

@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name        Pocket tag filtering
+// @version     1.0.0
 // @namespace   http://www.agj.cl/
 // @description Shows tags toward the top that you can select to filter the list of links.
-// @version     0.0.1
-// @grant       none
+// @license     Unlicense
 // @include     http*://getpocket.com/a/queue/list/*
+// @grant       none
 // ==/UserScript==
 
 const onLoad = cb => /interactive|complete/.test(document.readyState) ? setTimeout(cb, 0) : document.addEventListener('DOMContentLoaded', cb);

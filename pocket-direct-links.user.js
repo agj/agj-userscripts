@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name        Pocket direct links
+// @version     1.0.1
 // @namespace   http://www.agj.cl/
 // @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
-// @version     1.0.0
-// @grant       none
+// @license     Unlicense
 // @include     http*://getpocket.com/a/queue/list/*
+// @grant       none
 // ==/UserScript==
 
 const onLoad = cb => /interactive|complete/.test(document.readyState) ? setTimeout(cb, 0) : document.addEventListener('DOMContentLoaded', cb);
