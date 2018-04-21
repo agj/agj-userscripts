@@ -23,6 +23,7 @@ const not = f => (...args) => !f(...args);
 const has = a => list => list.includes(a);
 const isIn = list => obj => list.some(a => a === obj);
 const toggle = a => list => has(a)(list) ? list.filter(not(eq(a))) : list.concat([a]);
+const without = a => list => list.filter(b => b !== a);
 const tap = f => (...args) => { f(...args); return args[0] };
 const log = tap(console.log);
 const onChanged = (el, cb) => {
@@ -54,6 +55,9 @@ const styles = `
 		background-color: red;
 		color: white;
 	}
+	.tf-tag.tf-hidden {
+		color: silver;
+	}
 
 	.item.tf-hidden {
 		display: none;
@@ -78,21 +82,30 @@ onLoad(() => {
 	const init = () => {
 		initted();
 		let tagsSelected = [];
-		const tagClicked = tag => () => {
-			tagsSelected = toggle(tag)(tagsSelected);
+		let tagsHidden = [];
+		const tagClicked = (tag, positive) => {
+			if (positive) {
+				tagsHidden = without(tag)(tagsHidden);
+				tagsSelected = toggle(tag)(tagsSelected);
+			} else {
+				tagsSelected = without(tag)(tagsSelected);
+				tagsHidden = toggle(tag)(tagsHidden);
+			}
 			updateView();
 		};
 		const updateView = () => {
 			const items = Array.from(selAll('#queue > .item'));
 			items.forEach(el => el.classList.remove('tf-hidden'));
-			items.filter(not(hasAllTags(tagsSelected)))
+			items.filter(el => !hasAllTags(tagsSelected)(el) || hasAnyTags(tagsHidden)(el))
 				.forEach(el => el.classList.add('tf-hidden'));
 			Array.from(selAll('.tf-tag'))
-				.forEach(el => el.classList.remove('tf-selected'));
+				.forEach(el => { el.classList.remove('tf-selected'); el.classList.remove('tf-hidden') });
 			tagsSelected.forEach(t => sel(`.tf-tag[data-tag="${ t }"]`).classList.add('tf-selected'));
+			tagsHidden.forEach(t => sel(`.tf-tag[data-tag="${ t }"]`).classList.add('tf-hidden'));
 			document.dispatchEvent(new Event('scroll'));
 		};
 		const hasAllTags = tags => el => tags.every(elHasTag(el));
+		const hasAnyTags = tags => el => tags.some(elHasTag(el));
 		const elHasTag = el => tag => Array.from(el.querySelectorAll('.tag')).some(el => el.textContent === tag);
 
 		const tags =
@@ -103,12 +116,12 @@ onLoad(() => {
 			tags
 			.map(tag => {
 				const el = makeEl('div', { 'class': 'tf-tag', 'data-tag': tag }, tag);
-				el.addEventListener('click', tagClicked(tag));
+				el.addEventListener('click', e => tagClicked(tag, !e.shiftKey));
 				return el;
 			});
 
 		const tagListEl =
-			makeEl('div', { 'class': 'tf-tag-list' },
+			makeEl('div', { 'class': 'tf-tag-list', 'title': 'Shift+click to hide' },
 				...tagEls);
 		sel('#page_queue .queue_secondarynav_main').append(tagListEl);
 
