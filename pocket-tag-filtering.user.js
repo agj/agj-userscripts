@@ -4,7 +4,7 @@
 // @namespace   http://www.agj.cl/
 // @description Shows tags toward the top that you can select to filter the list of links.
 // @license     Unlicense
-// @include     http*://getpocket.com/a/queue/list/*
+// @include     http*://getpocket.com/*
 // @grant       none
 // ==/UserScript==
 
@@ -25,34 +25,39 @@ const isIn = list => obj => list.some(a => a === obj);
 const toggle = a => list => has(a)(list) ? list.filter(not(eq(a))) : list.concat([a]);
 const tap = f => (...args) => { f(...args); return args[0] };
 const log = tap(console.log);
+const onChanged = (el, cb) => {
+	const observer = new MutationObserver(cb);
+	observer.observe(el, { childList: true });
+	return observer.disconnect.bind(observer);
+};
 
 const styles = `
-.tf-tag-list {
-  display: block;
-  text-align: left;
-  padding-bottom: 0.5em;
-  font-size: 12pt;
-  line-height: 1.6;
-}
+	.tf-tag-list {
+		display: block;
+		text-align: left;
+		padding-bottom: 0.5em;
+		font-size: 12pt;
+		line-height: 1.6;
+	}
 
-.tf-tag {
-  display: inline-block;
-  margin-right: 0.2em;
-  margin-bottom: 0.2em;
-  background-color: white;
-  padding: 0 0.3em;
-  white-space: nowrap;
-  border-radius: 0.2em;
-  cursor: pointer;
-}
-.tf-tag.tf-selected {
-	background-color: red;
-	color: white;
-}
+	.tf-tag {
+		display: inline-block;
+		margin-right: 0.2em;
+		margin-bottom: 0.2em;
+		background-color: white;
+		padding: 0 0.3em;
+		white-space: nowrap;
+		border-radius: 0.2em;
+		cursor: pointer;
+	}
+	.tf-tag.tf-selected {
+		background-color: red;
+		color: white;
+	}
 
-.item.tf-hidden {
-	display: none;
-}
+	.item.tf-hidden {
+		display: none;
+	}
 `;
 
 
@@ -64,13 +69,14 @@ onLoad(() => {
 	setTimeout(() => sel('.side-nav').click(), 5);
 
 	const checkTagsLoaded = () => {
-		const loaded = !!sel('#pagenav_tagfilter .popover-new-list > li.editdelete');
-		if (loaded) init();
-		else setTimeout(checkTagsLoaded, 200);
+		const tagsLoaded = !!sel('#pagenav_tagfilter .popover-new-list > li.editdelete');
+		if (tagsLoaded) init();
 	};
+	const initted = onChanged(sel('#pagenav_tagfilter .popover-new-list'), checkTagsLoaded);
 	checkTagsLoaded();
 
 	const init = () => {
+		initted();
 		let tagsSelected = [];
 		const tagClicked = tag => () => {
 			tagsSelected = toggle(tag)(tagsSelected);
@@ -106,8 +112,7 @@ onLoad(() => {
 				...tagEls);
 		sel('#page_queue .queue_secondarynav_main').append(tagListEl);
 
-		const mutationObserver = new MutationObserver(updateView);
-		mutationObserver.observe(sel('#queue'), { childList: true });
+		onChanged(sel('#queue'), updateView);
 	};
 
 

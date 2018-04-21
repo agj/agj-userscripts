@@ -4,7 +4,7 @@
 // @namespace   http://www.agj.cl/
 // @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
 // @license     Unlicense
-// @include     http*://getpocket.com/a/queue/list/*
+// @include     http*://getpocket.com/*
 // @grant       none
 // ==/UserScript==
 
@@ -25,14 +25,20 @@ const isIn = list => obj => list.some(a => a === obj);
 const toggle = a => list => has(a)(list) ? list.filter(not(eq(a))) : list.concat([a]);
 const tap = f => (...args) => { f(...args); return args[0] };
 const log = tap(console.log);
+const onChanged = (el, cb) => {
+	const observer = new MutationObserver(cb);
+	observer.observe(el, { childList: true });
+	return observer.disconnect.bind(observer);
+};
+
 
 
 onLoad(() => {
 
-	log('okay');
+	// Actual link fixing.
 
 	const fix = () => {
-		log(Array.from(selAll('#queue > .item:not(.dl-fixed)')))
+		Array.from(selAll('#queue > .item:not(.dl-fixed)'))
 			.forEach(fixEl);
 	};
 	const fixEl = el => {
@@ -40,16 +46,36 @@ onLoad(() => {
 		const linkBelow = el.querySelector('.original_url');
 		const url = decodeURIComponent(linkBelow.getAttribute('href').replace(/^.+redirect\?url=([^&]*)&.*$/, '$1'));
 		const readerURL = linkTitle.getAttribute('href');
-		log(url, readerURL)
 		linkTitle.setAttribute('href', url);
 		el.querySelector('.item_link').setAttribute('href', url);
 		linkBelow.setAttribute('href', /^\/a\/read\//.test(readerURL) ? readerURL : url);
 		el.classList.add('dl-fixed');
 	};
 
-	const mutationObserver = new MutationObserver(fix);
-	mutationObserver.observe(sel('#queue'), { childList: true });
+	// Fix when links added.
+
+	onChanged(sel('#queue'), fix);
 	fix();
+
+	// Fix when history state changed.
+
+	const pushState = history.pushState;
+	const replaceState = history.replaceState;
+
+	history.pushState = (...args) => {
+		pushState(...args);
+		locationChanged();
+	};
+	history.replaceState = (...args) => {
+		replaceState(...args);
+		locationChanged();
+	}
+	window.addEventListener('popstate', locationChanged);
+
+	const locationChanged = () => {
+		fix();
+	}
+
 
 });
 
