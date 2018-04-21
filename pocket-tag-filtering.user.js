@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket tag filtering
-// @version     1.0.0
+// @version     1.1.0
 // @namespace   http://www.agj.cl/
 // @description Shows tags toward the top that you can select to filter the list of links.
 // @license     Unlicense
@@ -110,9 +110,10 @@ onLoad(() => {
 			tagsHidden.forEach(t => sel(`.tf-tag[data-tag="${ t }"]`).classList.add('tf-hidden'));
 			document.dispatchEvent(new Event('scroll'));
 		};
-		const hasAllTags = tags => el => tags.every(elHasTag(el));
-		const hasAnyTags = tags => el => tags.some(elHasTag(el));
-		const elHasTag = el => tag => Array.from(el.querySelectorAll('.tag')).some(el => el.textContent === tag);
+		const elTags = el => Array.from(el.querySelectorAll('.tag')).map(el => el.textContent);
+		const elHasTag = el => tag => elTags(el).some(t => t === tag);
+		const hasAllTags = tags => el => without('untagged')(tags).every(elHasTag(el)) && (!has('untagged')(tags) || elTags(el).length === 0);
+		const hasAnyTags = tags => el => without('untagged')(tags).some(elHasTag(el))  || ( has('untagged')(tags) && elTags(el).length === 0);
 
 		const tags =
 			Array.from(selAll('#pagenav_tagfilter .popover-new-list > li'))

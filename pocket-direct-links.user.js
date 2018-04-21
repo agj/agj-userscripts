@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     1.0.1
+// @version     1.1.0
 // @namespace   http://www.agj.cl/
 // @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
 // @license     Unlicense

@@ -29,7 +29,7 @@ Main links are converted to direct links, and clicking on the URL below the titl
 
 #### pocket-tag-filtering _(updated 2018-03-15)_
 
-Shows tags toward the top that you can select to filter the list of links.
+Shows tags toward the top that you can select to filter the list of links. Click tag to show only links that contain that tag; shift-click tag to hide links that contain it.
 
 
 ### [Wikipedia][wikipedia]
