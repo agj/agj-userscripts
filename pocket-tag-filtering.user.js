@@ -50,6 +50,10 @@ const styles = `
 		white-space: nowrap;
 		border-radius: 0.2em;
 		cursor: pointer;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		-webkit-user-select: none;
+		user-select: none;
 	}
 	.tf-tag.tf-selected {
 		background-color: red;
@@ -82,7 +86,8 @@ onLoad(() => {
 	const init = () => {
 		initted();
 		let tagsSelected = [];
-		let tagsHidden = [];
+		const storageTagsHidden = localStorage.getItem('tagsHidden');
+		let tagsHidden = storageTagsHidden ? storageTagsHidden.split('\t') : [];
 		const tagClicked = (tag, positive) => {
 			if (positive) {
 				tagsHidden = without(tag)(tagsHidden);
@@ -91,6 +96,7 @@ onLoad(() => {
 				tagsSelected = without(tag)(tagsSelected);
 				tagsHidden = toggle(tag)(tagsHidden);
 			}
+			localStorage.setItem('tagsHidden', tagsHidden.join('\t'));
 			updateView();
 		};
 		const updateView = () => {
@@ -124,6 +130,7 @@ onLoad(() => {
 			makeEl('div', { 'class': 'tf-tag-list', 'title': 'Shift+click to hide' },
 				...tagEls);
 		sel('#page_queue .queue_secondarynav_main').append(tagListEl);
+		updateView();
 
 		onChanged(sel('#queue'), updateView);
 	};
