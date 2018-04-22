@@ -9,7 +9,7 @@ These are scripts that modify the functionality or appearance of certain website
 
 #### cdjournal-to-musicbrainz _(updated 2018-03-15)_
 
-CDJournal.com のレコードページに「MusicBrainz に投稿」というリンクを追加します（作品名の右側に）。リンクをクリックすると、レコードの詳細で書き込み済み MusicBrainz の Add Release（リリースを投稿）ページが開きます。
+CDJournal.com のレコードページに「MusicBrainz に投稿」というリンクを追加します（作品名の右側に）。リンクをクリックすると、レコードの詳細で書き込み済み MusicBrainz の Add Release（リリースを投稿）ページが開かれます。
 
 Adds a link "MusicBrainz に投稿" to any CDJournal.com record entry page (right of the artist/record title) that opens the Add Release form in MusicBrainz, prefilling it with that record's information.
 

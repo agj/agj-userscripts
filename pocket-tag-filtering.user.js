@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name        Pocket tag filtering
-// @version     1.1.0
+// @version     1.1.1
 // @namespace   http://www.agj.cl/
-// @description Shows tags toward the top that you can select to filter the list of links.
+// @description Shows tags toward the top that you can select to filter the list of links. Click tag to show only links that contain that tag; shift-click tag to hide links that contain it.
 // @license     Unlicense
 // @include     http*://getpocket.com/*
 // @grant       none
