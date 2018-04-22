@@ -23,11 +23,11 @@ Raises the 'Details' and 'Storyline' blocks to right below the main information 
 
 ### [Pocket][pocket]
 
-#### pocket-direct-links _(updated 2018-03-15)_
+#### pocket-direct-links _(updated 2018-04-21)_
 
 Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
 
-#### pocket-tag-filtering _(updated 2018-03-15)_
+#### pocket-tag-filtering _(updated 2018-04-21)_
 
 Shows tags toward the top that you can select to filter the list of links. Click tag to show only links that contain that tag; shift-click tag to hide links that contain it.
 
