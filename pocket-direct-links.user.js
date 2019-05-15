@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     1.1.0
+// @version     1.1.1
 // @namespace   http://www.agj.cl/
 // @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
 // @license     Unlicense
@@ -42,11 +42,17 @@ onLoad(() => {
 			.forEach(fixEl);
 	};
 	const fixEl = el => {
+		const linkGeneral = el.querySelector('a.item_link');
 		const linkTitle = el.querySelector('a.title');
 		const linkBelow = el.querySelector('.original_url');
 		const url = decodeURIComponent(linkBelow.getAttribute('href').replace(/^.+redirect\?url=([^&]*)&.*$/, '$1'));
 		const readerURL = linkTitle.getAttribute('href');
+		linkGeneral.setAttribute('href', url);
 		linkTitle.setAttribute('href', url);
+		linkGeneral.addEventListener('click', () => {
+			console.log('clicked', url)
+			window.location.href = url;
+		});
 		el.querySelector('.item_link').setAttribute('href', url);
 		linkBelow.setAttribute('href', /^\/a\/read\//.test(readerURL) ? readerURL : url);
 		el.classList.add('dl-fixed');
