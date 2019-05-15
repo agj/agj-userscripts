@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket tag filtering
-// @version     1.1.1
+// @version     1.1.2
 // @namespace   http://www.agj.cl/
 // @description Shows tags toward the top that you can select to filter the list of links. Click tag to show only links that contain that tag; shift-click tag to hide links that contain it.
 // @license     Unlicense
@@ -117,7 +117,7 @@ onLoad(() => {
 
 		const tags =
 			Array.from(selAll('#pagenav_tagfilter .popover-new-list > li'))
-			.map(el => el.getAttribute('val'))
+			.map(el => decodeURIComponent(el.getAttribute('val')))
 			.filter(not(isIn(['all', 'edit'])));
 		const tagEls =
 			tags
