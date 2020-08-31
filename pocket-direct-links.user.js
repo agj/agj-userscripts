@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     2.0.0
+// @version     2.0.1
 // @namespace   http://www.agj.cl/
 // @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
 // @license     Unlicense
@@ -79,8 +79,8 @@ onLoad(() => {
 
 	// Fix when history state changed.
 
-	const pushState = history.pushState;
-	const replaceState = history.replaceState;
+	const pushState = history.pushState.bind(history);
+	const replaceState = history.replaceState.bind(history);
 	const locationChanged = () => {
 		fix();
 	}
