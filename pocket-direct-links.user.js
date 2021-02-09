@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     2.0.1
+// @version     3.0.0
 // @namespace   http://www.agj.cl/
-// @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
+// @description Clicking on an item directly opens the website, not the Pocket reader.
 // @license     Unlicense
-// @include     http*://app.getpocket.com/*
+// @include     http*://getpocket.com/*
 // @grant       none
 // ==/UserScript==
 
@@ -26,6 +26,8 @@ const toggle = a => list => has(a)(list) ? list.filter(not(eq(a))) : list.concat
 const tap = f => (...args) => { f(...args); return args[0] };
 const log = tap(console.log);
 const onChanged = (el, cb) => {
+	if (!el) throw `onChanged: No element passed.`;
+	if (!cb) throw `onChanged: No callback passed.`;
 	const observer = new MutationObserver(cb);
 	observer.observe(el, { childList: true, subtree: true });
 	return observer.disconnect.bind(observer);
@@ -37,44 +39,35 @@ onLoad(() => {
 	// Actual link fixing.
 
 	const fix = () => {
-		Array.from(selAll(`article`))
+		Array.from(selAll('article'))
 			.forEach(fixEl);
 	};
 	const fixEl = el => {
-		const elImage = el.querySelector('a[aria-label]');
-		const elTitle = el.querySelector('div > a[aria-label]');
-		const elDirect = el.querySelector('div > div > cite > a');
-
-		if (!elImage || !elTitle || !elDirect) return;
-
-		const isFixed = !!el.getAttribute('x-actual-url');
-		const url = isFixed
-			? el.getAttribute('x-actual-url')
-			: decodeURIComponent(elDirect.getAttribute('href').replace(/^.+redirect\?url=([^&]*)(\&.*)?$/, '$1'));
-		const readerUrl = isFixed
-			? el.getAttribute('x-reader-url')
-			: elTitle.getAttribute('href');
-
-		elImage.setAttribute('href', url);
-		elTitle.setAttribute('href', url);
-		elDirect.setAttribute('href', /^\/read\//.test(readerUrl) ? readerUrl : url);
-
-		const openUrl = (e) => {
-			window.location.href = url;
+		const linkEl = el.querySelector('a');
+		const menuButton = el.querySelector('.footer .item-menu button');
+		const doIt = (e) => {
+			e.stopPropagation();
 			e.preventDefault();
-		}
-		elImage.addEventListener('click', openUrl);
-		elTitle.addEventListener('click', openUrl);
-
-		if (!isFixed) {
-			el.setAttribute('x-actual-url', url);
-			el.setAttribute('x-reader-url', readerUrl);
-		}
+			menuButton.click();
+			sel('body').click();
+			const openLinkEl = el.querySelector('.footer .item-menu > div > ul > li > ul > li > a');
+			const rawUrl = openLinkEl.getAttribute('href');
+			const url = decodeURIComponent(rawUrl.replace(/^.*redirect\?url=(.*)$/g, '$1'));
+			return url;
+		};
+		linkEl.addEventListener('click', (e) => {
+			const url = doIt(e);
+			window.location.href = url;
+		});
+		linkEl.addEventListener('auxclick', (e) => {
+			const url = doIt(e);
+			window.open(url);
+		})
 	};
 
 	// Fix when links added.
 
-	onChanged(sel('#root'), fix);
+	onChanged(sel('#__next'), fix);
 	fix();
 
 	// Fix when history state changed.
@@ -95,7 +88,6 @@ onLoad(() => {
 	}
 
 	window.addEventListener('popstate', locationChanged);
-
 
 });
 
