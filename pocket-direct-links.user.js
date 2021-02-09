@@ -4,13 +4,13 @@
 // @namespace   http://www.agj.cl/
 // @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
 // @license     Unlicense
-// @include     http*://app.getpocket.com/*
+// @include     http*://getpocket.com/*
 // @grant       none
 // ==/UserScript==
 
 const onLoad = cb => /interactive|complete/.test(document.readyState) ? setTimeout(cb, 0) : document.addEventListener('DOMContentLoaded', cb);
-const sel = document.querySelector.bind(document);
-const selAll = document.querySelectorAll.bind(document);
+const sel = unsafeWindow.document.querySelector.bind(document);
+const selAll = unsafeWindow.document.querySelectorAll.bind(document);
 const makeEl = (tag, attrs, ...children) => {
 	const el = document.createElement(tag);
 	if (attrs) Object.keys(attrs).forEach(attr => el.setAttribute(attr, attrs[attr]));
@@ -26,9 +26,30 @@ const toggle = a => list => has(a)(list) ? list.filter(not(eq(a))) : list.concat
 const tap = f => (...args) => { f(...args); return args[0] };
 const log = tap(console.log);
 const onChanged = (el, cb) => {
+	if (!el) throw `onChanged: No element passed.`;
+	if (!cb) throw `onChanged: No callback passed.`;
 	const observer = new MutationObserver(cb);
 	observer.observe(el, { childList: true, subtree: true });
 	return observer.disconnect.bind(observer);
+};
+const findReact = (dom, traverseUp = 0) => {
+    const key = Object.keys(dom).find((key) => key.startsWith("__reactFiber$"));
+	const domFiber = dom[key];
+    if (domFiber == null) return null;
+
+    const getCompFiber = (fiber) => {
+        //return fiber._debugOwner; // this also works, but is __DEV__ only
+        let parentFiber = fiber.return;
+        while (typeof parentFiber.type == "string") {
+            parentFiber = parentFiber.return;
+        }
+        return parentFiber;
+    };
+    let compFiber = getCompFiber(domFiber);
+    for (let i = 0; i < traverseUp; i++) {
+        compFiber = getCompFiber(compFiber);
+    }
+    return compFiber.stateNode;
 };
 
 
@@ -41,6 +62,8 @@ onLoad(() => {
 			.forEach(fixEl);
 	};
 	const fixEl = el => {
+		console.log('findReact', findReact(el))
+
 		const elImage = el.querySelector('a[aria-label]');
 		const elTitle = el.querySelector('div > a[aria-label]');
 		const elDirect = el.querySelector('div > div > cite > a');
@@ -74,7 +97,7 @@ onLoad(() => {
 
 	// Fix when links added.
 
-	onChanged(sel('#root'), fix);
+	onChanged(sel('#__next'), fix);
 	fix();
 
 	// Fix when history state changed.
