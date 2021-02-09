@@ -1,16 +1,16 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     2.0.1
+// @version     3.0.0
 // @namespace   http://www.agj.cl/
-// @description Main links are converted to direct links, and clicking on the URL below the title opens the Pocket reader (if available).
+// @description Clicking on an item directly opens the website, not the Pocket reader.
 // @license     Unlicense
 // @include     http*://getpocket.com/*
 // @grant       none
 // ==/UserScript==
 
 const onLoad = cb => /interactive|complete/.test(document.readyState) ? setTimeout(cb, 0) : document.addEventListener('DOMContentLoaded', cb);
-const sel = unsafeWindow.document.querySelector.bind(document);
-const selAll = unsafeWindow.document.querySelectorAll.bind(document);
+const sel = document.querySelector.bind(document);
+const selAll = document.querySelectorAll.bind(document);
 const makeEl = (tag, attrs, ...children) => {
 	const el = document.createElement(tag);
 	if (attrs) Object.keys(attrs).forEach(attr => el.setAttribute(attr, attrs[attr]));
@@ -32,25 +32,6 @@ const onChanged = (el, cb) => {
 	observer.observe(el, { childList: true, subtree: true });
 	return observer.disconnect.bind(observer);
 };
-const findReact = (dom, traverseUp = 0) => {
-    const key = Object.keys(dom).find((key) => key.startsWith("__reactFiber$"));
-	const domFiber = dom[key];
-    if (domFiber == null) return null;
-
-    const getCompFiber = (fiber) => {
-        //return fiber._debugOwner; // this also works, but is __DEV__ only
-        let parentFiber = fiber.return;
-        while (typeof parentFiber.type == "string") {
-            parentFiber = parentFiber.return;
-        }
-        return parentFiber;
-    };
-    let compFiber = getCompFiber(domFiber);
-    for (let i = 0; i < traverseUp; i++) {
-        compFiber = getCompFiber(compFiber);
-    }
-    return compFiber.stateNode;
-};
 
 
 
@@ -58,41 +39,30 @@ onLoad(() => {
 	// Actual link fixing.
 
 	const fix = () => {
-		Array.from(selAll(`article`))
+		Array.from(selAll('article'))
 			.forEach(fixEl);
 	};
 	const fixEl = el => {
-		console.log('findReact', findReact(el))
-
-		const elImage = el.querySelector('a[aria-label]');
-		const elTitle = el.querySelector('div > a[aria-label]');
-		const elDirect = el.querySelector('div > div > cite > a');
-
-		if (!elImage || !elTitle || !elDirect) return;
-
-		const isFixed = !!el.getAttribute('x-actual-url');
-		const url = isFixed
-			? el.getAttribute('x-actual-url')
-			: decodeURIComponent(elDirect.getAttribute('href').replace(/^.+redirect\?url=([^&]*)(\&.*)?$/, '$1'));
-		const readerUrl = isFixed
-			? el.getAttribute('x-reader-url')
-			: elTitle.getAttribute('href');
-
-		elImage.setAttribute('href', url);
-		elTitle.setAttribute('href', url);
-		elDirect.setAttribute('href', /^\/read\//.test(readerUrl) ? readerUrl : url);
-
-		const openUrl = (e) => {
-			window.location.href = url;
+		const linkEl = el.querySelector('a');
+		const menuButton = el.querySelector('.footer .item-menu button');
+		const doIt = (e) => {
+			e.stopPropagation();
 			e.preventDefault();
-		}
-		elImage.addEventListener('click', openUrl);
-		elTitle.addEventListener('click', openUrl);
-
-		if (!isFixed) {
-			el.setAttribute('x-actual-url', url);
-			el.setAttribute('x-reader-url', readerUrl);
-		}
+			menuButton.click();
+			sel('body').click();
+			const openLinkEl = el.querySelector('.footer .item-menu > div > ul > li > ul > li > a');
+			const rawUrl = openLinkEl.getAttribute('href');
+			const url = decodeURIComponent(rawUrl.replace(/^.*redirect\?url=(.*)$/g, '$1'));
+			return url;
+		};
+		linkEl.addEventListener('click', (e) => {
+			const url = doIt(e);
+			window.location.href = url;
+		});
+		linkEl.addEventListener('auxclick', (e) => {
+			const url = doIt(e);
+			window.open(url);
+		})
 	};
 
 	// Fix when links added.
@@ -118,7 +88,6 @@ onLoad(() => {
 	}
 
 	window.addEventListener('popstate', locationChanged);
-
 
 });
 
