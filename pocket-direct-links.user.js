@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     3.0.0
+// @version     3.1.0
 // @namespace   http://www.agj.cl/
 // @description Clicking on an item directly opens the website, not the Pocket reader.
 // @license     Unlicense
@@ -45,7 +45,7 @@ onLoad(() => {
 	const fixEl = el => {
 		const linkEl = el.querySelector('a');
 		const menuButton = el.querySelector('.footer .item-menu button');
-		const doIt = (e) => {
+		const getUrl = (e) => {
 			e.stopPropagation();
 			e.preventDefault();
 			menuButton.click();
@@ -56,13 +56,17 @@ onLoad(() => {
 			return url;
 		};
 		linkEl.addEventListener('click', (e) => {
-			const url = doIt(e);
-			window.location.href = url;
+			const url = getUrl(e);
+			if (e.getModifierState('Meta') || e.getModifierState('Control')) {
+				window.open(url);
+			} else {
+				window.location.href = url;
+			}
 		});
 		linkEl.addEventListener('auxclick', (e) => {
-			const url = doIt(e);
+			const url = getUrl(e);
 			window.open(url);
-		})
+		});
 	};
 
 	// Fix when links added.
@@ -76,7 +80,7 @@ onLoad(() => {
 	const replaceState = history.replaceState.bind(history);
 	const locationChanged = () => {
 		fix();
-	}
+	};
 
 	history.pushState = (...args) => {
 		pushState(...args);
@@ -85,7 +89,7 @@ onLoad(() => {
 	history.replaceState = (...args) => {
 		replaceState(...args);
 		locationChanged();
-	}
+	};
 
 	window.addEventListener('popstate', locationChanged);
 
