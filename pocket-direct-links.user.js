@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     3.1.1
+// @version     4.0.0
 // @namespace   http://www.agj.cl/
 // @description Clicking on an item directly opens the website, not the Pocket reader.
 // @license     Unlicense
@@ -11,18 +11,6 @@
 const onLoad = cb => /interactive|complete/.test(document.readyState) ? setTimeout(cb, 0) : document.addEventListener('DOMContentLoaded', cb);
 const sel = document.querySelector.bind(document);
 const selAll = document.querySelectorAll.bind(document);
-const makeEl = (tag, attrs, ...children) => {
-	const el = document.createElement(tag);
-	if (attrs) Object.keys(attrs).forEach(attr => el.setAttribute(attr, attrs[attr]));
-	children.map(obj => typeof obj === 'string' ? document.createTextNode(obj) : obj)
-		.forEach(node => el.appendChild(node));
-	return el;
-};
-const eq = a => b => b === a;
-const not = f => (...args) => !f(...args);
-const has = a => list => list.includes(a);
-const isIn = list => obj => list.some(a => a === obj);
-const toggle = a => list => has(a)(list) ? list.filter(not(eq(a))) : list.concat([a]);
 const tap = f => (...args) => { f(...args); return args[0] };
 const log = tap(console.log);
 const onChanged = (el, cb) => {
@@ -33,42 +21,52 @@ const onChanged = (el, cb) => {
 	return observer.disconnect.bind(observer);
 };
 
+const attrFixedFlag = 'data-link-fixed-agj';
+const getReactKey = (el) =>
+	Object.keys(el).find((key) => /^__reactProps/.test(key));
+const getUrl = (el) => // Huge hack to get the URL from deep within the React component!
+	el[getReactKey(el)]
+	.children[3]
+	.props
+	.children[1]
+	.props
+	.children
+	.props
+	.children[1]
+	.props
+	.openUrl;
 
 
 onLoad(() => {
 	// Actual link fixing.
 
 	const fix = () => {
-		Array.from(selAll('article'))
+		Array.from(unsafeWindow.document.querySelectorAll('article'))
 			.forEach(fixEl);
 	};
-	const fixEl = el => {
+	const fixEl = (el) => {
+		const url = getUrl(el);
+
+		const id = el.getAttribute('data-cy');
 		const linkEl = el.querySelector('a');
-		const menuButton = el.querySelector('.footer .item-menu button');
-		const getUrl = (e) => {
-			e.stopPropagation();
-			e.preventDefault();
-			menuButton.click();
-			sel('body').click();
-			const openLinkEl = el.querySelector('.footer .item-menu > div > ul > li > ul > li > a');
-			const rawUrl = openLinkEl.getAttribute('href');
-			const url = decodeURIComponent(rawUrl.replace(/^.*redirect\?url=(.*)$/g, '$1'));
-			return url;
-		};
-		linkEl.addEventListener('click', (e) => {
-			if (!e.getModifierState('Shift') && !e.getModifierState('Alt')) {
-				const url = getUrl(e);
-				if (e.getModifierState('Meta') || e.getModifierState('Control')) {
-					window.open(url);
-				} else {
-					window.location.href = url;
-				}
+		const safeEl = sel(`[data-cy="${ id }"]`);
+		const safeLinkEl = safeEl.querySelector('a');
+
+		if (linkEl.getAttribute(attrFixedFlag)) {
+			return;
+		}
+
+		linkEl.setAttribute('href', url);
+
+		safeLinkEl.addEventListener('click', (e) => {
+			if (!e.getModifierState('Shift') && !e.getModifierState('Alt') && !e.getModifierState('Meta') && !e.getModifierState('Control')) {
+				e.stopPropagation();
+				e.preventDefault();
+				window.location.href = url;
 			}
 		});
-		linkEl.addEventListener('auxclick', (e) => {
-			const url = getUrl(e);
-			window.open(url);
-		});
+
+		linkEl.setAttribute(attrFixedFlag, true);
 	};
 
 	// Fix when links added.
@@ -94,7 +92,6 @@ onLoad(() => {
 	};
 
 	window.addEventListener('popstate', locationChanged);
-
 });
 
 
