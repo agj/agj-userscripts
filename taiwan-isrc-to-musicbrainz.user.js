@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name            Taiwan ISRC to MusicBrainz
-// @version         1.0.0
+// @version         1.1.0
 // @namespace       http://www.agj.cl/
 // @description     Adds a link to any isrc.ncl.edu.tw record entry page that opens the Add Release form in MusicBrainz, prefilling it with that record's information.
 // @license         Unlicense
@@ -47,7 +47,7 @@ const values =
         else if (/發行日期/.test(label)) r.date = value.split('/');
         return r;
     }, {});
-values.tracks = Array.from(selAll('.AllMusic > fieldset > a'))
+values.tracks = Array.from(selAll('.AllMusic fieldset a'))
                 .map(get('textContent'))
                 .map(call('trim'))
                 .map(t => t.replace(/^.+ ] 曲目名稱:(.*)$/, '$1'));
