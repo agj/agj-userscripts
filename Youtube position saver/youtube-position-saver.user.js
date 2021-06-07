@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Youtube position saver
-// @version     1.0.0
+// @version     1.0.1
 // @namespace   http://www.agj.cl/
 // @description Periodically records the current playing time while you watch videos, so you don't lose track of where you were watching.
 // @license     Unlicense
@@ -41,4 +41,8 @@ onLoad(() => {
   };
 
   setInterval(saveTime, saveIntervalSeconds * 1000);
+
+  document
+    .querySelector("#movie_player video")
+    .addEventListener("seeked", saveTime);
 });
