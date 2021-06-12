@@ -1,48 +1,44 @@
 // ==UserScript==
 // @name        Youtube position saver
-// @version     1.0.1
+// @version     2.0.0
 // @namespace   http://www.agj.cl/
 // @description Periodically records the current playing time while you watch videos, so you don't lose track of where you were watching.
 // @license     Unlicense
-// @match       *://*.youtube.com/watch*
+// @match       *://*.youtube.com/*
 // @grant       none
 // ==/UserScript==
 
 // Configuration
 
-const previewSeconds = 5;
 const saveIntervalSeconds = 10;
+const previewSeconds = 5;
 
 // Utilities
 
 const onLoad = (cb) =>
   /interactive|complete/.test(document.readyState)
     ? setTimeout(cb, 0)
-    : document.addEventListener("DOMContentLoaded", cb);
+    : document.addEventListener("DOMContentLoaded", cb, { once: true });
+const getVideo = () => document.querySelector("video.html5-main-video");
+const getTimeToSave = (seconds) =>
+  Math.max(0, Math.floor(seconds - previewSeconds));
 
 // Position saving
 
 onLoad(() => {
-  const video = unsafeWindow.document.querySelector("#movie_player");
-  let previousTime = video.getCurrentTime() || 0;
+  let video;
 
   const saveTime = () => {
-    if (video) {
-      const seconds = video.getCurrentTime();
-      if (seconds !== previousTime) {
-        const url = new URL(location);
-        url.searchParams.set(
-          "t",
-          Math.max(0, Math.floor(seconds) - previewSeconds)
-        );
-        history.replaceState(history.state, document.title, url.toString());
-      }
+    if (!video || !video.document) {
+      video = getVideo();
+      if (!video) return;
+      video.addEventListener("seeked", saveTime);
     }
+    const seconds = video.currentTime;
+    const url = new URL(location);
+    url.searchParams.set("t", getTimeToSave(seconds).toString() + "s");
+    history.replaceState(history.state, document.title, url.toString());
   };
 
   setInterval(saveTime, saveIntervalSeconds * 1000);
-
-  document
-    .querySelector("#movie_player video")
-    .addEventListener("seeked", saveTime);
 });
