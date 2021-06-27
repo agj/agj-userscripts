@@ -1,18 +1,19 @@
 // ==UserScript==
-// @name        Niconico position saver
-// @version     1.0.0
-// @namespace   http://www.agj.cl/
-// @description Periodically records the current playing time while you watch videos, so you don't lose track of where you were watching.
-// @license     Unlicense
-// @match       *://*.nicovideo.jp/*
-// @grant       none
+// @name           Niconico position saver
+// @name:ja        ニコニコ動画 再生位置保存
+// @version        1.0.0
+// @namespace      http://www.agj.cl/
+// @description    Periodically records the current playing time while you watch videos, so you don't lose track of where you were watching.
+// @description:ja 定期的に保存されるため、再読み込みしても再生位置がリセットされません。
+// @license        Unlicense
+// @match          *://*.nicovideo.jp/watch/*
+// @grant          none
 // ==/UserScript==
 
 // Configuration
 
 const saveIntervalSeconds = 10;
 const previewSeconds = 5;
-const videoReadyPollingSeconds = 0.2;
 
 // Utilities
 
@@ -20,44 +21,11 @@ const onLoad = (cb) =>
   /interactive|complete/.test(document.readyState)
     ? setTimeout(cb, 0)
     : document.addEventListener("DOMContentLoaded", cb, { once: true });
-const onChanged = (el, cb) => {
-  const observer = new MutationObserver(cb);
-  observer.observe(el, {
-    childList: true,
-    subtree: true,
-  });
-  return observer.disconnect.bind(observer);
-};
 const getVideo = () => document.querySelector("#MainVideoPlayer video");
 const getTimeToSave = (seconds) =>
   Math.max(0, Math.floor(seconds - previewSeconds));
 
-// Position retrieving
-
-console.log("!", location);
-const startTimeString = new URL(location).searchParams.get("t");
-const startTime = startTimeString === "" ? null : parseInt(startTimeString);
-const videoLoaded = false;
-
 onLoad(() => {
-  // Position restoring
-
-  if (startTime) {
-    const tryRestoringVideo = () => {
-      const video = getVideo();
-      if (video && video.duration) {
-        video.currentTime = startTime;
-        saveTime();
-        clearInterval(intervalId);
-      }
-    };
-
-    const intervalId = setInterval(
-      tryRestoringVideo,
-      videoReadyPollingSeconds * 1000
-    );
-  }
-
   // Position saving
 
   let video;
@@ -70,7 +38,7 @@ onLoad(() => {
     }
     const seconds = video.currentTime;
     const url = new URL(location);
-    url.searchParams.set("t", getTimeToSave(seconds).toString());
+    url.searchParams.set("from", getTimeToSave(seconds).toString());
     history.replaceState(history.state, document.title, url.toString());
   };
 
