@@ -136,7 +136,8 @@
     form.append(...trackInputs);
 
     const container = sel(".card-header");
-    container.append(button, form);
+    container.insertAdjacentElement("afterbegin", form);
+    container.insertAdjacentElement("afterbegin", button);
 
     button.addEventListener("click", (e) => {
       form.submit();
