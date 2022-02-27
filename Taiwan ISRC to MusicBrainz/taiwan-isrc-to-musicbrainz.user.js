@@ -57,7 +57,7 @@
   onFullLoad(async () => {
     // Get values.
 
-    await waitFor(1000);
+    await waitFor(100);
 
     const values = Array.from(sel(".table").querySelectorAll("tr")).reduce(
       (r, el) => {
@@ -82,13 +82,21 @@
 
     console.log({ values });
 
-    // Add submit link.
+    // Add submit button.
 
     const checkValue = (value) => (value === undefined ? "" : value);
     const input = (name, value) =>
       dom("input", { name: name, value: checkValue(value), type: "text" });
 
-    const link = dom("a", null, "Add to MusicBrainz");
+    const button = dom(
+      "button",
+      {
+        class: "btn btn-outline-secondary pull-right",
+        id: "musicbrainz-button",
+      },
+      "Add to MusicBrainz"
+    );
+
     const form = dom(
       "form",
       {
@@ -114,10 +122,9 @@
       input("mediums.0.format", "cd"),
       input("edit_note", "From Taiwan ISRC: " + window.location.href)
     );
-    const container = dom("div", { id: "musicbrainz-submit" }, link, form);
 
     const trackCount = counter();
-    flatten(
+    const trackInputs = flatten(
       values.tracks.map((title) => {
         const i = trackCount();
         return [
@@ -125,10 +132,13 @@
           input(`mediums.0.track.${i}.number`, i + 1),
         ];
       })
-    ).map((el) => form.appendChild(el));
+    );
+    form.append(...trackInputs);
 
-    sel("#mainContent > div").prepend(container);
-    link.addEventListener("click", (e) => {
+    const container = sel(".card-header");
+    container.append(button, form);
+
+    button.addEventListener("click", (e) => {
       form.submit();
       e.preventDefault();
     });
@@ -138,18 +148,9 @@
         "style",
         null,
         `
-        #musicbrainz-submit {
-            display: inline-flex;
-            vertical-align: bottom;
-            margin-right: 20px;
-            height: 42px;
-            align-items: center;
-        }
-        #musicbrainz-submit a {
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-        }
+          #musicbrainz-button {
+            float: right
+          }
 `
       )
     );
