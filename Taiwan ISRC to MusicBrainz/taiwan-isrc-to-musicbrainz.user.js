@@ -16,12 +16,6 @@
   const sel = document.querySelector.bind(document);
   const selAll = document.querySelectorAll.bind(document);
   const selIn = (el, selector) => el.querySelector(selector);
-  const get = (prop) => (obj) => obj[prop];
-  const call =
-    (method, ...args) =>
-    (obj) =>
-      obj[method](...args);
-  const esc = encodeURIComponent;
   const dom = (tag, attrs, ...children) => {
     const el = document.createElement(tag);
     if (attrs)
@@ -75,12 +69,9 @@
       {}
     );
 
-    values.tracks = Array.from(selAll("#songsTable a"))
-      .map(get("textContent"))
-      .map(call("trim"))
-      .map((t) => t.replace(/^\[\S+\] \d+[.](.*)$/, "$1"));
-
-    console.log({ values });
+    values.tracks = Array.from(selAll("#songsTable a")).map((el) =>
+      el.textContent.trim().replace(/^\[\S+\] \d+[.](.*)$/, "$1")
+    );
 
     // Add submit button.
 
