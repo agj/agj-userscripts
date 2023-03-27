@@ -118,8 +118,22 @@
         {}
       );
 
-      values.tracks = Array.from(songsTable.querySelectorAll("a")).map((el) =>
-        el.textContent.trim().replace(/^\[\S+\] \d+[.](.*)$/, "$1")
+      values.tracks = Array.from(songsTable.querySelectorAll("tr")).map(
+        (el) => {
+          const [hours, minutes, seconds] = el
+            .querySelector("td.text-right")
+            .textContent.trim()
+            .split(".")
+            .map(Number);
+          const paddedSeconds = seconds.toString().padStart(2, "0");
+          return {
+            title: el
+              .querySelector("a")
+              .textContent.trim()
+              .replace(/^\[\S+\] \d+[.](.*)$/, "$1"),
+            length: `${hours * 60 + minutes}:${paddedSeconds}`,
+          };
+        }
       );
 
       console.log({ values });
@@ -146,10 +160,11 @@
 
       const trackCount = counter();
       const trackInputs = flatten(
-        values.tracks.map((title) => {
+        values.tracks.map(({ title, length }) => {
           const i = trackCount();
           return [
             input(`mediums.0.track.${i}.name`, title),
+            input(`mediums.0.track.${i}.length`, length),
             input(`mediums.0.track.${i}.number`, i + 1),
           ];
         })
