@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name            Taiwan ISRC to MusicBrainz
-// @version         2.0.0
+// @version         3.0.0
 // @namespace       http://www.agj.cl/
-// @description     Adds a link to any isrc.ncl.edu.tw record entry page that opens the Add Release form in MusicBrainz, prefilling it with that record's information.
+// @description     Adds an “Add to MusicBrainz” button to any Taiwan ISRC website record entry page, which prefills the record submission form on MusicBrainz.
+// @description.zh  在台灣ISRC網站裡的專輯頁上加「Add to MusicBrainz」（加到 MusicBrainz 音樂數據庫）的按鈕。
 // @license         Unlicense
 // @include         http*://isrc.ncl.edu.tw/C100/*
 // @grant           none
