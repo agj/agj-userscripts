@@ -4,7 +4,7 @@ init: ## Load a shell with all dependencies (if you don't use direnv).
 
 build: ## Compile all TS files into JS.
 	tsc
-	prettier --write **/*.(ts|js)
+	prettier --write '**/*.(ts|js)'
 
 
 
