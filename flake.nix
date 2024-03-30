@@ -19,6 +19,7 @@
           buildInputs = with pkgs; [
             typescript
             nodePackages.prettier
+            entr
           ];
         };
       }
