@@ -132,10 +132,11 @@ type Values = {
           if (/表演者/.test(label)) r.artist = value;
           else if (/樂團名稱/.test(label)) r.artist = value;
           else if (/專輯名稱/.test(label)) r.title = value;
-          else if (/發行公司/.test(label)) r.label = value;
+          else if (/發行公司/.test(label))
+            r.label = value.match(/([A-Z]+\d+)?(.+)/)?.[2];
           else if (/產品編碼/.test(label)) r.cat = value;
           else if (/EAN\/UPC碼/.test(label)) r.barcode = value;
-          else if (/發行日期/.test(label)) r.date = value.split(".");
+          else if (/發行日期/.test(label)) r.date = value.split(/[-.]/);
           return r;
         },
         {},
@@ -175,6 +176,7 @@ type Values = {
         input("labels.0.catalog_number", values.cat),
         input("events.0.date.year", values.date?.[0]),
         input("events.0.date.month", values.date?.[1]),
+        input("events.0.date.day", values.date?.[2]),
         input("events.0.country", "TW"),
         input("barcode", values.barcode),
         input("urls.0.url", window.location.href),
@@ -183,7 +185,14 @@ type Values = {
         input("script", "Hant"),
         input("status", "official"),
         input("mediums.0.format", "cd"),
-        input("edit_note", "From Taiwan ISRC: " + window.location.href),
+        dom(
+          "textarea",
+          { name: "edit_note" },
+          "From Taiwan ISRC: " +
+            window.location.href +
+            "\n\n" +
+            "Imported using the “Taiwan ISRC to MusicBrainz” userscript: https://github.com/agj/agj-userscripts/tree/master/Taiwan%20ISRC%20to%20MusicBrainz",
+        ),
       ];
 
       const trackCount = counter();
