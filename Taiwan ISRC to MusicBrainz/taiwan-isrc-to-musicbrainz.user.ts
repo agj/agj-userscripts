@@ -15,16 +15,17 @@
   // Utilities.
 
   const sel = document.querySelector.bind(document);
-  const selAll = document.querySelectorAll.bind(document);
   const selIn = (el: Element, selector: string) => el.querySelector(selector);
-  const dom = (
+  const dom = <Attrs extends Record<string, string>>(
     tag: string,
-    attrs: Record<string, string>,
+    attrs: Attrs,
     ...children: Array<HTMLElement | string>
   ) => {
     const el = document.createElement(tag);
     if (attrs)
-      Object.keys(attrs).forEach((attr) => el.setAttribute(attr, attrs[attr]));
+      Object.keys(attrs).forEach((attr) =>
+        el.setAttribute(attr.toString(), attrs[attr] ?? "")
+      );
     children
       .map((obj) =>
         typeof obj === "string" ? document.createTextNode(obj) : obj
@@ -36,28 +37,22 @@
     let i = 0;
     return () => i++;
   };
-  const flatten = <T>(list: T[]) =>
-    list.reduce(
-      (r, item) =>
-        Array.isArray(item) ? r.concat(flatten(item)) : r.concat([item]),
-      []
-    );
-  const onFullLoad = (cb) =>
+  const onFullLoad = (cb: () => any) =>
     /complete/.test(document.readyState)
       ? setTimeout(cb, 0)
-      : window.addEventListener("load", cb, {
-          once: true,
-        });
-  const waitFor = (milliseconds) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, milliseconds);
+      : window.addEventListener("load", cb, { once: true });
+  const checkValue = (value: string | undefined) =>
+    value === undefined ? "" : value;
+  const input = (name: string, value: string | number | undefined) =>
+    dom("input", {
+      name: name,
+      value: checkValue(value?.toString()),
+      type: "text",
     });
-  const checkValue = (value) => (value === undefined ? "" : value);
-  const input = (name, value) =>
-    dom("input", { name: name, value: checkValue(value), type: "text" });
-  const observe = (element, callback) => {
-    const observer = new MutationObserver(callback);
-    observer.observe(element, { childList: true, subtree: true });
+  const onChanged = (el: Element, cb: MutationCallback): (() => void) => {
+    const observer = new MutationObserver(cb);
+    observer.observe(el, { childList: true, subtree: true });
+    return observer.disconnect.bind(observer);
   };
 
   onFullLoad(async () => {
@@ -72,27 +67,27 @@
       "Add to MusicBrainz"
     );
 
-    const form = dom("form", {
+    const form: HTMLFormElement = dom("form", {
       name: "musicbrainz-submit",
       action: "https://musicbrainz.org/release/add",
       method: "post",
       "accept-charset": "utf-8",
       style: "display: none",
-    });
+    }) as HTMLFormElement;
 
     const container = sel(".card-header");
-    container.insertAdjacentElement("afterbegin", form);
-    container.insertAdjacentElement("afterbegin", button);
+    container?.insertAdjacentElement("afterbegin", form);
+    container?.insertAdjacentElement("afterbegin", button);
 
     button.addEventListener("click", (e) => {
       form.submit();
       e.preventDefault();
     });
 
-    sel("head").append(
+    sel("head")?.append(
       dom(
         "style",
-        null,
+        {},
         `
           #musicbrainz-button {
             float: right
@@ -102,6 +97,10 @@
 
     const table = sel(".table");
     const songsTable = sel("#songsTable");
+
+    if (!table || !songsTable) {
+      return;
+    }
 
     const updateForm = () => {
       // Get values.
@@ -121,7 +120,7 @@
         tracks?: Track[];
       };
 
-      const values = Array.from(table?.querySelectorAll("tr") ?? []).reduce(
+      const values = Array.from(table.querySelectorAll("tr") ?? []).reduce(
         (r: Values, el) => {
           const label = selIn(el, "th")?.textContent?.trim() ?? "";
           const value = selIn(el, "td")?.textContent?.trim() ?? "";
@@ -138,7 +137,7 @@
         {}
       );
 
-      values.tracks = Array.from(songsTable?.querySelectorAll("tr") ?? []).map(
+      values.tracks = Array.from(songsTable.querySelectorAll("tr") ?? []).map(
         (el): Track => {
           const [hours, minutes, seconds] =
             el
@@ -170,8 +169,8 @@
         input("artist_credit.names.0.name", values.artist),
         input("labels.0.name", values.label),
         input("labels.0.catalog_number", values.cat),
-        input("events.0.date.year", values.date[0]),
-        input("events.0.date.month", values.date[1]),
+        input("events.0.date.year", values.date?.[0]),
+        input("events.0.date.month", values.date?.[1]),
         input("events.0.country", "TW"),
         input("barcode", values.barcode),
         input("urls.0.url", window.location.href),
@@ -203,7 +202,7 @@
 
     // Listen to changes in data.
 
-    observe(table, updateForm);
-    observe(songsTable, updateForm);
+    onChanged(table, updateForm);
+    onChanged(songsTable, updateForm);
   });
 })();
