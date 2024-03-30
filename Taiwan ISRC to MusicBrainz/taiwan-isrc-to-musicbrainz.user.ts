@@ -9,14 +9,29 @@
 // @grant           none
 // ==/UserScript==
 
+type Track = {
+  title: string;
+  length: string;
+};
+
+type Values = {
+  artist?: string;
+  title?: string;
+  label?: string;
+  cat?: string;
+  barcode?: string;
+  date?: string[];
+  tracks?: Track[];
+};
+
 (() => {
   // Utilities.
 
   const sel = document.querySelector.bind(document);
   const selIn = (el: Element, selector: string) => el.querySelector(selector);
-  const dom = <Attrs extends Record<string, string>>(
+  const dom = (
     tag: string,
-    attrs: Attrs,
+    attrs: Record<string, string>,
     ...children: Array<HTMLElement | string>
   ) => {
     const el = document.createElement(tag);
@@ -102,21 +117,6 @@
 
     const updateForm = () => {
       // Get values.
-
-      type Track = {
-        title: string;
-        length: string;
-      };
-
-      type Values = {
-        artist?: string;
-        title?: string;
-        label?: string;
-        cat?: string;
-        barcode?: string;
-        date?: string[];
-        tracks?: Track[];
-      };
 
       const values = Array.from(table.querySelectorAll("tr") ?? []).reduce(
         (r: Values, el) => {
