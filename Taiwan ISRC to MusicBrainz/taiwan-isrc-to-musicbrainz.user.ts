@@ -10,8 +10,6 @@
 // ==/UserScript==
 
 (() => {
-  "use strict";
-
   // Utilities.
 
   const sel = document.querySelector.bind(document);
@@ -24,11 +22,11 @@
     const el = document.createElement(tag);
     if (attrs)
       Object.keys(attrs).forEach((attr) =>
-        el.setAttribute(attr.toString(), attrs[attr] ?? "")
+        el.setAttribute(attr.toString(), attrs[attr] ?? ""),
       );
     children
       .map((obj) =>
-        typeof obj === "string" ? document.createTextNode(obj) : obj
+        typeof obj === "string" ? document.createTextNode(obj) : obj,
       )
       .forEach((node) => el.appendChild(node));
     return el;
@@ -64,7 +62,7 @@
         class: "btn btn-outline-secondary pull-right",
         id: "musicbrainz-button",
       },
-      "Add to MusicBrainz"
+      "Add to MusicBrainz",
     );
 
     const form: HTMLFormElement = dom("form", {
@@ -91,8 +89,8 @@
         `
           #musicbrainz-button {
             float: right
-          }`
-      )
+          }`,
+      ),
     );
 
     const table = sel(".table");
@@ -134,7 +132,7 @@
           else if (/發行日期/.test(label)) r.date = value.split(".");
           return r;
         },
-        {}
+        {},
       );
 
       values.tracks = Array.from(songsTable.querySelectorAll("tr") ?? []).map(
@@ -157,7 +155,7 @@
                 ? `${hours * 60 + minutes}:${paddedSeconds}`
                 : "0:00",
           };
-        }
+        },
       );
 
       console.log({ values });

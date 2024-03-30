@@ -32,7 +32,7 @@ onLoad(() => {
     Array.from(document.querySelectorAll("article")).forEach(fixOne);
   };
 
-	const fixOne = (el) => {
+  const fixOne = (el) => {
     const url = getUrl(el);
     if (!el.getAttribute(attrFixedFlag)) {
       const links = el.querySelectorAll(".content .title a, .cardWrap a");
