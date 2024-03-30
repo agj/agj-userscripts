@@ -1,4 +1,3 @@
-"use strict";
 // ==UserScript==
 // @name            Taiwan ISRC to MusicBrainz
 // @version         3.1.0
@@ -9,11 +8,32 @@
 // @include         http*://isrc.ncl.edu.tw/C100/*
 // @grant           none
 // ==/UserScript==
+
+type Track = {
+  title: string;
+  length: string;
+};
+
+type Values = {
+  artist?: string;
+  title?: string;
+  label?: string;
+  cat?: string;
+  barcode?: string;
+  date?: string[];
+  tracks?: Track[];
+};
+
 (() => {
   // Utilities.
+
   const sel = document.querySelector.bind(document);
-  const selIn = (el, selector) => el.querySelector(selector);
-  const dom = (tag, attrs, ...children) => {
+  const selIn = (el: Element, selector: string) => el.querySelector(selector);
+  const dom = (
+    tag: string,
+    attrs: Record<string, string>,
+    ...children: Array<HTMLElement | string>
+  ) => {
     const el = document.createElement(tag);
     if (attrs)
       Object.keys(attrs).forEach((attr) =>
@@ -30,28 +50,32 @@
     let i = 0;
     return () => i++;
   };
-  const onFullLoad = (cb) =>
+  const onFullLoad = (cb: () => any) =>
     /complete/.test(document.readyState)
       ? setTimeout(cb, 0)
       : window.addEventListener("load", cb, { once: true });
-  const checkValue = (value) => (value === undefined ? "" : value);
-  const input = (name, value) =>
+  const checkValue = (value: string | undefined) =>
+    value === undefined ? "" : value;
+  const input = (name: string, value: string | number | undefined) =>
     dom("input", {
       name: name,
       value: checkValue(value?.toString()),
       type: "text",
     });
-  const onChanged = (el, cb) => {
+  const onChanged = (el: Element, cb: MutationCallback): (() => void) => {
     const observer = new MutationObserver(cb);
     observer.observe(el, { childList: true, subtree: true });
     return observer.disconnect.bind(observer);
   };
+
   onFullLoad(async () => {
     if (sel("#musicbrainz-button")) {
       // We're already loaded.
       return;
     }
+
     // Add elements to DOM.
+
     const button = dom(
       "button",
       {
@@ -60,21 +84,25 @@
       },
       "Add to MusicBrainz",
     );
-    const form = dom("form", {
+
+    const form: HTMLFormElement = dom("form", {
       name: "musicbrainz-submit",
       action: "https://musicbrainz.org/release/add",
       method: "post",
       "accept-charset": "utf-8",
       style: "display: none",
       target: "_blank",
-    });
+    }) as HTMLFormElement;
+
     const container = sel(".card-header");
     container?.insertAdjacentElement("afterbegin", form);
     container?.insertAdjacentElement("afterbegin", button);
+
     button.addEventListener("click", (e) => {
       form.submit();
       e.preventDefault();
     });
+
     sel("head")?.append(
       dom(
         "style",
@@ -85,15 +113,19 @@
           }`,
       ),
     );
+
     const table = sel(".table");
     const songsTable = sel("#songsTable");
+
     if (!table || !songsTable) {
       return;
     }
+
     const updateForm = () => {
       // Get values.
+
       const values = Array.from(table.querySelectorAll("tr") ?? []).reduce(
-        (r, el) => {
+        (r: Values, el) => {
           const label = selIn(el, "th")?.textContent?.trim() ?? "";
           const value = selIn(el, "td")?.textContent?.trim() ?? "";
           if (/表演者/.test(label)) r.artist = value;
@@ -108,8 +140,9 @@
         },
         {},
       );
+
       values.tracks = Array.from(songsTable.querySelectorAll("tr") ?? []).map(
-        (el) => {
+        (el): Track => {
           const [hours, minutes, seconds] =
             el
               .querySelector("td.text-right")
@@ -130,7 +163,9 @@
           };
         },
       );
+
       // Create form inputs.
+
       const baseInputs = [
         input("name", values.title),
         input("artist_credit.names.0.name", values.artist),
@@ -156,6 +191,7 @@
             "Imported using the “Taiwan ISRC to MusicBrainz” userscript: https://github.com/agj/agj-userscripts/tree/master/Taiwan%20ISRC%20to%20MusicBrainz",
         ),
       ];
+
       const trackCount = counter();
       const trackInputs = values.tracks.flatMap(({ title, length }) => {
         const i = trackCount();
@@ -165,12 +201,17 @@
           input(`mediums.0.track.${i}.number`, i + 1),
         ];
       });
+
       // Replace form contents with new data.
+
       form.textContent = "";
       form.append(...baseInputs, ...trackInputs);
     };
+
     updateForm();
+
     // Listen to changes in data.
+
     onChanged(table, updateForm);
     onChanged(songsTable, updateForm);
   });

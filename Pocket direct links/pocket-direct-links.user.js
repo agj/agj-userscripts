@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        Pocket direct links
-// @version     5.0.0
+// @version     5.0.1
 // @namespace   http://www.agj.cl/
 // @description Clicking on an item directly opens the website, not the Pocket reader.
 // @license     Unlicense
@@ -32,7 +32,7 @@ onLoad(() => {
     Array.from(document.querySelectorAll("article")).forEach(fixOne);
   };
 
-	const fixOne = (el) => {
+  const fixOne = (el) => {
     const url = getUrl(el);
     if (!el.getAttribute(attrFixedFlag)) {
       const links = el.querySelectorAll(".content .title a, .cardWrap a");
