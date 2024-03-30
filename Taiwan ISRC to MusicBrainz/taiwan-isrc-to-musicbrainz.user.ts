@@ -16,8 +16,12 @@
 
   const sel = document.querySelector.bind(document);
   const selAll = document.querySelectorAll.bind(document);
-  const selIn = (el, selector) => el.querySelector(selector);
-  const dom = (tag, attrs, ...children) => {
+  const selIn = (el: Element, selector: string) => el.querySelector(selector);
+  const dom = (
+    tag: string,
+    attrs: Record<string, string>,
+    ...children: Array<HTMLElement | string>
+  ) => {
     const el = document.createElement(tag);
     if (attrs)
       Object.keys(attrs).forEach((attr) => el.setAttribute(attr, attrs[attr]));
@@ -32,7 +36,7 @@
     let i = 0;
     return () => i++;
   };
-  const flatten = (list) =>
+  const flatten = <T>(list: T[]) =>
     list.reduce(
       (r, item) =>
         Array.isArray(item) ? r.concat(flatten(item)) : r.concat([item]),
@@ -102,10 +106,25 @@
     const updateForm = () => {
       // Get values.
 
-      const values = Array.from(table.querySelectorAll("tr")).reduce(
-        (r, el) => {
-          const label = selIn(el, "th").textContent.trim();
-          const value = selIn(el, "td").textContent.trim();
+      type Track = {
+        title: string;
+        length: string;
+      };
+
+      type Values = {
+        artist?: string;
+        title?: string;
+        label?: string;
+        cat?: string;
+        barcode?: string;
+        date?: string[];
+        tracks?: Track[];
+      };
+
+      const values = Array.from(table?.querySelectorAll("tr") ?? []).reduce(
+        (r: Values, el) => {
+          const label = selIn(el, "th")?.textContent?.trim() ?? "";
+          const value = selIn(el, "td")?.textContent?.trim() ?? "";
           console.log({ el, label, value });
           if (/表演者/.test(label)) r.artist = value;
           else if (/樂團名稱/.test(label)) r.artist = value;
@@ -119,20 +138,25 @@
         {}
       );
 
-      values.tracks = Array.from(songsTable.querySelectorAll("tr")).map(
-        (el) => {
-          const [hours, minutes, seconds] = el
-            .querySelector("td.text-right")
-            .textContent.trim()
-            .split(".")
-            .map(Number);
-          const paddedSeconds = seconds.toString().padStart(2, "0");
+      values.tracks = Array.from(songsTable?.querySelectorAll("tr") ?? []).map(
+        (el): Track => {
+          const [hours, minutes, seconds] =
+            el
+              .querySelector("td.text-right")
+              ?.textContent?.trim()
+              .split(".")
+              .map(Number) ?? [];
+          const paddedSeconds = seconds?.toString().padStart(2, "0");
           return {
-            title: el
-              .querySelector("a")
-              .textContent.trim()
-              .replace(/^\[\S+\] \d+[.](.*)$/, "$1"),
-            length: `${hours * 60 + minutes}:${paddedSeconds}`,
+            title:
+              el
+                .querySelector("a")
+                ?.textContent?.trim()
+                .replace(/^\[\S+\] \d+[.](.*)$/, "$1") ?? "",
+            length:
+              hours && minutes
+                ? `${hours * 60 + minutes}:${paddedSeconds}`
+                : "0:00",
           };
         }
       );
@@ -160,16 +184,14 @@
       ];
 
       const trackCount = counter();
-      const trackInputs = flatten(
-        values.tracks.map(({ title, length }) => {
-          const i = trackCount();
-          return [
-            input(`mediums.0.track.${i}.name`, title),
-            input(`mediums.0.track.${i}.length`, length),
-            input(`mediums.0.track.${i}.number`, i + 1),
-          ];
-        })
-      );
+      const trackInputs = values.tracks.flatMap(({ title, length }) => {
+        const i = trackCount();
+        return [
+          input(`mediums.0.track.${i}.name`, title),
+          input(`mediums.0.track.${i}.length`, length),
+          input(`mediums.0.track.${i}.number`, i + 1),
+        ];
+      });
 
       // Replace form contents with new data.
 
