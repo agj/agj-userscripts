@@ -128,7 +128,6 @@ type Values = {
         (r: Values, el) => {
           const label = selIn(el, "th")?.textContent?.trim() ?? "";
           const value = selIn(el, "td")?.textContent?.trim() ?? "";
-          console.log({ el, label, value });
           if (/表演者/.test(label)) r.artist = value;
           else if (/樂團名稱/.test(label)) r.artist = value;
           else if (/專輯名稱/.test(label)) r.title = value;
@@ -164,8 +163,6 @@ type Values = {
           };
         },
       );
-
-      console.log({ values });
 
       // Create form inputs.
 
