@@ -69,6 +69,11 @@ type Values = {
   };
 
   onFullLoad(async () => {
+    if (sel("#musicbrainz-button")) {
+      // We're already loaded.
+      return;
+    }
+
     // Add elements to DOM.
 
     const button = dom(
@@ -86,6 +91,7 @@ type Values = {
       method: "post",
       "accept-charset": "utf-8",
       style: "display: none",
+      target: "_blank",
     }) as HTMLFormElement;
 
     const container = sel(".card-header");
