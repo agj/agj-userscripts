@@ -17,9 +17,11 @@
       in {
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
+            alejandra
             entr
             just
             nodePackages.prettier
+            treefmt
             typescript
           ];
         };

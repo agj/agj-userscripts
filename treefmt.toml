@@ -1,0 +1,17 @@
+[formatter.typescript]
+command = "prettier"
+options = ["--write", "--parser", "typescript"]
+includes = ["*.ts"]
+excludes = []
+
+[formatter.markdown]
+command = "prettier"
+options = ["--write", "--parser", "markdown"]
+includes = ["*.md"]
+excludes = []
+
+[formatter.nix]
+command = "alejandra"
+options = []
+includes = ["*.nix"]
+excludes = []
