@@ -19,4 +19,4 @@ watch:
 
 # Format files.
 format:
-	prettier --write '**/*.(ts|js)'
+	treefmt
