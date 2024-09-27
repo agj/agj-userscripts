@@ -1,4 +1,3 @@
-
 # Youtube position saver
 
 Userscript by agj. Works on [Youtube](https://www.youtube.com/).

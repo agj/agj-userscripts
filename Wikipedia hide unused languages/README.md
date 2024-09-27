@@ -1,4 +1,3 @@
-
 # Wikipedia hide unused languages
 
 Userscript by agj. Works on [Wikipedia](https://www.wikipedia.org/).

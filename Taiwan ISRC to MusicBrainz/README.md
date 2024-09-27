@@ -1,4 +1,3 @@
-
 # Taiwan ISRC to MusicBrainz
 
 Userscript by agj. Works on [Taiwan ISRC](http://isrc.ncl.edu.tw/), links to [MusicBrainz](https://musicbrainz.org/).

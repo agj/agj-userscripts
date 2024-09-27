@@ -1,4 +1,3 @@
-
 # IMDB reprioritize
 
 Userscript by agj. Works on [IMDB](https://www.imdb.com/).
