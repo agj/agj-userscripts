@@ -4,6 +4,12 @@ options = ["--write", "--parser", "typescript"]
 includes = ["*.ts"]
 excludes = []
 
+[formatter.javascript]
+command = "prettier"
+options = ["--write", "--parser", "typescript"]
+includes = ["*.js"]
+excludes = []
+
 [formatter.markdown]
 command = "prettier"
 options = ["--write", "--parser", "markdown"]
@@ -14,4 +20,10 @@ excludes = []
 command = "alejandra"
 options = []
 includes = ["*.nix"]
+excludes = []
+
+[formatter.json]
+command = "prettier"
+options = ["--write", "--parser", "json"]
+includes = ["*.json"]
 excludes = []
