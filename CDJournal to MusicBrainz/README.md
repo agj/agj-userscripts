@@ -1,4 +1,3 @@
-
 # CDJournal to MusicBrainz
 
 Userscript by agj. Works on [CDJournal](http://www.cdjournal.com/), links to [MusicBrainz](https://musicbrainz.org/).

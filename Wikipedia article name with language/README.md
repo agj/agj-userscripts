@@ -1,4 +1,3 @@
-
 # Wikipedia article name with language
 
 Userscript by agj. Works on [Wikipedia](https://www.wikipedia.org/).

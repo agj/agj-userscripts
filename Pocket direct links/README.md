@@ -1,4 +1,3 @@
-
 # Pocket direct links
 
 Userscript by agj. Works on [Pocket](https://getpocket.com/).

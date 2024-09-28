@@ -1,0 +1,11 @@
+[formatter.prettier]
+command = "prettier"
+options = ["--write"]
+includes = ["*.ts", "*.js", "*.md", "*.json"]
+excludes = []
+
+[formatter.nix]
+command = "alejandra"
+options = []
+includes = ["*.nix"]
+excludes = []
