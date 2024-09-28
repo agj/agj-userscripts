@@ -1,4 +1,4 @@
-# List available tasks.
+[private]
 default:
 	just --list
 
